@@ -3,16 +3,16 @@ package org.example;
 public class Camera {
     double x;
     double y;
-    double angle;
     double fov;
+    double angle;
     double distanceFromScreen;
 
     public Camera(double x, double y, double angle, double fov, int terminalWidth) {
         this.x = x;
         this.y = y;
-        this.angle = angle;
-        this.fov = fov;
-        this.distanceFromScreen = ((double)terminalWidth / (2 * Math.tan(Math.toRadians(angle))));
+        this.fov = fov; // 70
+        this.distanceFromScreen = ((double)terminalWidth * 0.005 / Math.tan(Math.toRadians(fov / 2))); // about 0.735
+        System.out.println("x: " + x + " y: " + y + " angle: " + " fov: " + fov + " distanceFromScreen: " + distanceFromScreen);
     }
 
     public void move(double distance) {

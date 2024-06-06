@@ -1,6 +1,7 @@
 package org.example;
 
 import org.jline.terminal.Terminal;
+import org.jline.terminal.TerminalBuilder;
 
 import java.io.IOException;
 
@@ -14,18 +15,23 @@ public class GameController {
         World world = new World(30, 30);
         Input input = new Input();
         Output out = new Output();
-        Terminal terminal;
-        Camera camera = new Camera(15, 15, 0, 70, terminal.getWidth());
+        Terminal terminal = TerminalBuilder.builder()
+                .system(true)
+                .build();
+        // System.out.println("height" + terminal.getHeight() + "width" + terminal.getWidth());
+        // 50 208 in Hyprland full screen
+        Camera camera = new Camera(15, 15, 90, 70, terminal.getWidth());
 
         start();
-        while (running) {
-            if () {
-                camera.move(moveDistance);
-            }
-
-            if () {
-                camera.rotate(rotateAngle);
-            }
+        // while
+        while (!running) {
+//            if () {
+//                camera.move(moveDistance);
+//            }
+//
+//            if () {
+//                camera.rotate(rotateAngle);
+//            }
 
             Graphic frame = new Graphic(terminal.getWidth(), terminal.getHeight(), camera);
             out.output(frame);
