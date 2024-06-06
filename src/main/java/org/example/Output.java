@@ -28,7 +28,7 @@ public class Output {
     }
 
     public void ansiPrint(AnsiWriter ansiWriter, int y,int x, char c) throws IOException {
-        // Move the cursor to row 5, column 10
+        // Move the cursor to row y, column x
         String temp = String.format("\033[%d;%dH", y, x);
         ansiWriter.write(temp);
         // write
