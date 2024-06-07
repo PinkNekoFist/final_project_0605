@@ -45,7 +45,7 @@ public class Output {
             for (int j = 0; j < frame.width; j++ ) {
                 System.out.print(frame.frame[i][j]);
             }
-            System.out.println();
+            if (i != frame.height - 1 ) System.out.println();
         }
         frameLast = frame;
         ansiWriter.write("\033[0m");
