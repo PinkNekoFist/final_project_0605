@@ -48,12 +48,12 @@ public class Graphic {
             double tan = sin/cos;
             double distanceY = 0; // y is Z
             double distanceX = 0; // x is Z
-            double dy = 1/sin;
-            double dx = 1/cos;
+            double dy = Math.abs(1/sin);
+            double dx = Math.abs(1/cos);
 
             // find first two points
-            Point px = findFirstPointX(pointsAfter[i], vector2D[i], sin, cos, tan);
-            Point py = findFirstPointY(pointsAfter[i], vector2D[i], sin, cos, tan);
+            Point px = findFirstPointX(pointsAfter[i], vector2D[i], tan);
+            Point py = findFirstPointY(pointsAfter[i], vector2D[i], tan);
 //            System.out.println("first point x : " + px.x + " y : " + px.y);
 //            System.out.println("second point x : " + py.x + " y : " + py.y);
             // System.out.println(dx + " " + dy);
@@ -61,32 +61,36 @@ public class Graphic {
             distanceX += distanceBetweenPoints(pointsAfter[i], px);
             distanceY += distanceBetweenPoints(pointsAfter[i], py);
 
-            checkHit:
-            while (distanceX < camera.renderDistance || distanceY < camera.renderDistance) {
-                while (distanceX <= distanceY && distanceX < camera.renderDistance) {
-                    // System.out.println("checking hit");
-                    // check if the point is hit wall
-                    if (hitWall(vector2D[i], px, frame, screen, map)) {
-                        System.out.println(px.x + " " + px.y);
-                        break checkHit;
+            checkHit: {
+                while (distanceX < camera.renderDistance || distanceY < camera.renderDistance) {
+                    while (distanceX <= distanceY && distanceX < camera.renderDistance) {
+                        // System.out.println("checking hit");
+                        // check if the point is hit wall
+                        if (hitWall(vector2D[i], px, map)) {
+                            System.out.println(i + " hit " + px.x + " " + px.y);
+                            break checkHit;
+                        }
+                        // next point
+                        distanceX += dx;
+                        px.x += 1;
+                        px.y += tan;
+                        // System.out.println(i + distanceX + " " + distanceY);
                     }
-                    // next point
-                    distanceX += dx;
-                    px.x += 1;
-                    px.y += tan;
-                }
 
-                while (distanceY <= distanceX && distanceY < camera.renderDistance) {
-                    // check if the point is hit wall
-                    if (hitWall(vector2D[i], py, frame, screen, map)) {
-                        System.out.println(py.x + " " + py.y);
-                        break checkHit;
+                    while (distanceY <= distanceX && distanceY < camera.renderDistance) {
+                        // check if the point is hit wall
+                        if (hitWall(vector2D[i], py, map)) {
+                            System.out.println(i + " hit " + py.x + " " + py.y);
+                            break checkHit;
+                        }
+                        // next point
+                        distanceY += dy;
+                        py.x += 1 / tan;
+                        py.y += 1;
+                        // System.out.println(i + distanceX + " " + distanceY);
                     }
-                    // next point
-                    distanceY += dy;
-                    py.x += 1/tan;
-                    py.y += 1;
                 }
+                System.out.println(i + " not hit");
             }
         }
 
@@ -103,12 +107,12 @@ public class Graphic {
         return newPoint;
     }
 
-    private Point findFirstPointX (Point p, Point vector, double sin, double cos, double tan) {
+    private Point findFirstPointX (Point p, Point vector, double tan) {
         double x = (vector.x < 0) ? Math.floor(p.x) : Math.ceil(p.x);
         return new Point(x, p.y + (x - p.x) * tan);
     }
 
-    private Point findFirstPointY (Point p, Point vector, double sin, double cos, double tan) {
+    private Point findFirstPointY (Point p, Point vector, double tan) {
         double y = (vector.y < 0) ? Math.floor(p.y) : Math.ceil(p.y);
         return new Point(p.x + (y - p.y) / tan, y);
     }
@@ -117,12 +121,16 @@ public class Graphic {
         return Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
     }
 
-    private boolean hitWall (Point vector, Point p, char[][] frame, Screen screen, char[][] map) {
+    private boolean hitWall (Point vector, Point p, char[][] map) {
         int x = (int)p.x;
         int y = (int)p.y;
         if (vector.x < 0 && x == p.x) x -= 1;
         if (vector.y < 0 && y == p.y) y -= 1;
         if (x > map[0].length - 1 || 30 - y > map.length - 1) return false;
         return map[30 - y][x] == '#';
+    }
+
+    private void render (int column, double d1, double d2, char[][] frame) {
+
     }
 }
