@@ -16,7 +16,7 @@ public class Graphic {
         // test
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                frame[y][x] = '#';
+                frame[y][x] = ' ';
             }
         }
 
@@ -33,8 +33,8 @@ public class Graphic {
         for (int i = 0;i < width; i++) {
             pointsAfter[i] = rotatePoint(screen.points[i], camera.angle);
             vector2D[i] = new Point(pointsAfter[i]);
-            pointsAfter[i].x += camera.x;
-            pointsAfter[i].y += camera.y;
+            pointsAfter[i].x += camera.position.x;
+            pointsAfter[i].y += camera.position.y;
             // System.out.println(pointsAfter[i].x + " " + pointsAfter[i].y);
         }
 
@@ -61,13 +61,21 @@ public class Graphic {
             distanceX += distanceBetweenPoints(pointsAfter[i], px);
             distanceY += distanceBetweenPoints(pointsAfter[i], py);
 
+            // TODO
+            if (Double.isNaN(distanceY)) {
+                distanceY = 0;
+            }
+
             checkHit: {
                 while (distanceX < camera.renderDistance || distanceY < camera.renderDistance) {
+
+                    // System.out.println(distanceX + " " + distanceY);
                     while (distanceX <= distanceY && distanceX < camera.renderDistance) {
                         // System.out.println("checking hit");
                         // check if the point is hit wall
                         if (hitWall(vector2D[i], px, map)) {
-                            System.out.println(i + " hit " + px.x + " " + px.y);
+                            // System.out.println(i + " hit " + px.x + " " + px.y);
+                            render(i, distanceBetweenPoints(pointsAfter[i], camera.position), distanceX, frame);
                             break checkHit;
                         }
                         // next point
@@ -80,7 +88,8 @@ public class Graphic {
                     while (distanceY <= distanceX && distanceY < camera.renderDistance) {
                         // check if the point is hit wall
                         if (hitWall(vector2D[i], py, map)) {
-                            System.out.println(i + " hit " + py.x + " " + py.y);
+                            // System.out.println(i + " hit " + py.x + " " + py.y);
+                            render(i, distanceBetweenPoints(pointsAfter[i], camera.position), distanceY, frame);
                             break checkHit;
                         }
                         // next point
@@ -90,7 +99,8 @@ public class Graphic {
                         // System.out.println(i + distanceX + " " + distanceY);
                     }
                 }
-                System.out.println(i + " not hit");
+                // System.out.println(i + " not hit");
+                erase(i, frame);
             }
         }
 
@@ -124,13 +134,24 @@ public class Graphic {
     private boolean hitWall (Point vector, Point p, char[][] map) {
         int x = (int)p.x;
         int y = (int)p.y;
-        if (vector.x < 0 && x == p.x) x -= 1;
-        if (vector.y < 0 && y == p.y) y -= 1;
-        if (x > map[0].length - 1 || 30 - y > map.length - 1) return false;
+        // maybe something wrong here
+        if (vector.x < 0 && Math.abs(p.x - x) < 0.01) x -= 1;
+        if (vector.y < 0 && Math.abs(p.y - y) < 0.01) y -= 1;
+        if (x > map[0].length - 1 || 30 - y > map.length - 1 || x < 0 || y < 0) return false;
         return map[30 - y][x] == '#';
     }
 
     private void render (int column, double d1, double d2, char[][] frame) {
+        // System.out.println(d1 + " " + d2);
+        for (int i = (int)(d1 * -100 / (d1 + d2));i < (int)(d1 * 300 / (d1 + d2)) && i <= 35; i++) {
+            if (i < -14) i = -14;
+            frame[35 - i][column] = (char)('0' + column/100);
+        }
+    }
 
+    private void erase (int column, char[][] frame) {
+        for (int i = 0; i < frame.length; i++) {
+            frame[i][column] = ' ';
+        }
     }
 }
