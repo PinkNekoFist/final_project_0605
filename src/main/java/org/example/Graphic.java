@@ -1,5 +1,6 @@
 package org.example;
 
+import java.util.Vector;
 
 public class Graphic {
     public char[][] frame;
@@ -69,6 +70,7 @@ public class Graphic {
             int directionX = (vector2D[i].x > 0) ? 1 : -1;
             int directionY = (vector2D[i].y > 0) ? 1 : -1;
 
+            // can be a function
             checkHit: {
                 while (distanceX < camera.renderDistance || distanceY < camera.renderDistance) {
                     // System.out.println(distanceX + " " + distanceY);
@@ -77,7 +79,7 @@ public class Graphic {
                         // check if the point is hit wall
                         if (hitWall(vector2D[i], px, map)) {
                             // System.out.println(i + " hit " + px.x + " " + px.y + " " + tan);
-                            render(i, distanceBetweenPoints(pointsAfter[i], camera.position), distanceX, frame);
+                            render(i, height, distanceBetweenPoints(pointsAfter[i], camera.position), distanceX, frame, new Point(distanceX*cos, distanceX*sin), new Point(-1 * directionX, 0));
                             break checkHit;
                         }
                         // next point
@@ -91,7 +93,7 @@ public class Graphic {
                         // check if the point is hit wall
                         if (hitWall(vector2D[i], py, map)) {
                             // System.out.println(i + " hit " + py.x + " " + py.y + " " + tan);
-                            render(i, distanceBetweenPoints(pointsAfter[i], camera.position), distanceY, frame);
+                            render(i, height, distanceBetweenPoints(pointsAfter[i], camera.position), distanceY, frame, new Point(distanceY*cos, distanceY*sin), new Point(0, -1 * directionY));
                             break checkHit;
                         }
                         // next point
@@ -105,8 +107,6 @@ public class Graphic {
                 erase(i, frame);
             }
         }
-
-        // fourth step : return distance from wall to point
     }
 
     private Point rotatePoint (Point point, int angle) {
@@ -138,15 +138,21 @@ public class Graphic {
         int y = (int)p.y;
         if (vector.x < 0 && x == p.x) x -= 1;
         if (vector.y < 0 && y == p.y) y -= 1;
-        if (x > map[0].length - 1 || 30 - y > map.length - 1 || x < 0 || y < 0) return false;
-        return map[30 - y][x] == '#';
+        if (x > map[0].length - 1 || map.length - y > map.length - 1 || x < 0 || y < 0) return false;
+        return map[map.length - y][x] == '#';
     }
 
-    private void render (int column, double d1, double d2, char[][] frame) {
+    private void render (int column, int numOfRow, double d1, double d2, char[][] frame,Point lightVector, Point normalVector) {
         // System.out.println(d1 + " " + d2);
-        for (int i = (int)(d1 * -100 / (d1 + d2));i < (int)(d1 * 400 / (d1 + d2)) && i <= 35; i++) {
-            if (i < -14) i = -14;
-            frame[35 - i][column] = texture(d2);
+        double wallHeight = numOfRow * 12;
+        double ratio = 0.8;
+        int moveRow = (int)(wallHeight * ratio) - 40;
+        int startHeight = (int)(wallHeight * ratio * (1 - d1 / (d1 + d2))) - moveRow;
+        int endHeight = (int)(wallHeight * ratio * (1 + (1 - ratio) * d1 / (d1 +d2))) - moveRow;
+        System.out.println(startHeight + " " + endHeight);
+        for (int i = startHeight;i < endHeight; i++) {
+            if (i < 0 || i >= frame.length) continue;
+            frame[i][column] = texture(lightVector, normalVector);
         }
     }
 
@@ -156,12 +162,10 @@ public class Graphic {
         }
     }
 
-    private char texture (double distance) {
-        if (distance < 10) return '@';
-        else if (distance < 12) return '%';
-        else if (distance < 15) return '#';
-        else if (distance < 17) return '$';
-        else if (distance < 20) return '+';
-        else return '.';
+    private static final String lightTexture = ".'`^\\\",:;Il!i><~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$";
+    private char texture (Point lightVector, Point normalVector) {
+        double dot = lightVector.x * normalVector.x + lightVector.y * normalVector.y;
+        // System.out.println(lightVector.x + " " + lightVector.y + " " + normalVector.x + " " + normalVector.y);
+        return lightTexture.charAt(68 + (int)(dot * 50 / 30));
     }
 }
