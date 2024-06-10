@@ -66,36 +66,38 @@ public class Graphic {
                 distanceY = 0;
             }
 
+            int directionX = (vector2D[i].x > 0) ? 1 : -1;
+            int directionY = (vector2D[i].y > 0) ? 1 : -1;
+
             checkHit: {
                 while (distanceX < camera.renderDistance || distanceY < camera.renderDistance) {
-
                     // System.out.println(distanceX + " " + distanceY);
                     while (distanceX <= distanceY && distanceX < camera.renderDistance) {
                         // System.out.println("checking hit");
                         // check if the point is hit wall
                         if (hitWall(vector2D[i], px, map)) {
-                            // System.out.println(i + " hit " + px.x + " " + px.y);
+                            // System.out.println(i + " hit " + px.x + " " + px.y + " " + tan);
                             render(i, distanceBetweenPoints(pointsAfter[i], camera.position), distanceX, frame);
                             break checkHit;
                         }
                         // next point
                         distanceX += dx;
-                        px.x += (vector2D[i].x > 0 ? 1 : -1);
-                        px.y += tan;
+                        px.x += directionX;
+                        px.y += directionX * tan;
                         // System.out.println(i + distanceX + " " + distanceY);
                     }
 
                     while (distanceY <= distanceX && distanceY < camera.renderDistance) {
                         // check if the point is hit wall
                         if (hitWall(vector2D[i], py, map)) {
-                            // System.out.println(i + " hit " + py.x + " " + py.y);
+                            // System.out.println(i + " hit " + py.x + " " + py.y + " " + tan);
                             render(i, distanceBetweenPoints(pointsAfter[i], camera.position), distanceY, frame);
                             break checkHit;
                         }
                         // next point
                         distanceY += dy;
-                        py.x += 1 / tan;
-                        py.y += (vector2D[i].y > 0 ? 1 : -1);
+                        py.x += directionY / tan;
+                        py.y += directionY;
                         // System.out.println(i + distanceX + " " + distanceY);
                     }
                 }
@@ -142,9 +144,9 @@ public class Graphic {
 
     private void render (int column, double d1, double d2, char[][] frame) {
         // System.out.println(d1 + " " + d2);
-        for (int i = (int)(d1 * -100 / (d1 + d2));i < (int)(d1 * 300 / (d1 + d2)) && i <= 35; i++) {
+        for (int i = (int)(d1 * -100 / (d1 + d2));i < (int)(d1 * 400 / (d1 + d2)) && i <= 35; i++) {
             if (i < -14) i = -14;
-            frame[35 - i][column] = (char)('0' + column/100);
+            frame[35 - i][column] = texture(d2);
         }
     }
 
@@ -152,5 +154,14 @@ public class Graphic {
         for (int i = 0; i < frame.length; i++) {
             frame[i][column] = ' ';
         }
+    }
+
+    private char texture (double distance) {
+        if (distance < 10) return '@';
+        else if (distance < 12) return '%';
+        else if (distance < 15) return '#';
+        else if (distance < 17) return '$';
+        else if (distance < 20) return '+';
+        else return '.';
     }
 }
