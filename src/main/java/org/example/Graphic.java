@@ -62,51 +62,52 @@ public class Graphic {
             distanceX += distanceBetweenPoints(pointsAfter[i], px);
             distanceY += distanceBetweenPoints(pointsAfter[i], py);
 
-            // TODO
             if (Double.isNaN(distanceY)) {
                 distanceY = 0;
             }
 
             int directionX = (vector2D[i].x > 0) ? 1 : -1;
             int directionY = (vector2D[i].y > 0) ? 1 : -1;
+            Point distance = new Point(distanceX, distanceY);
 
-            // can be a function
-            checkHit: {
-                while (distanceX < camera.renderDistance || distanceY < camera.renderDistance) {
-                    // System.out.println(distanceX + " " + distanceY);
-                    while (distanceX <= distanceY && distanceX < camera.renderDistance) {
-                        // System.out.println("checking hit");
-                        // check if the point is hit wall
-                        if (hitWall(vector2D[i], px, map)) {
-                            // System.out.println(i + " hit " + px.x + " " + px.y + " " + tan);
-                            render(i, height, distanceBetweenPoints(pointsAfter[i], camera.position), distanceX, frame, new Point(distanceX*cos, distanceX*sin), new Point(-1 * directionX, 0));
-                            break checkHit;
-                        }
-                        // next point
-                        distanceX += dx;
-                        px.x += directionX;
-                        px.y += directionX * tan;
-                        // System.out.println(i + distanceX + " " + distanceY);
-                    }
+            checkHit(distance, px, py, camera, pointsAfter[i], sin, cos, tan, vector2D[i], map, i, dx, dy, directionX, directionY);
+        }
+    }
 
-                    while (distanceY <= distanceX && distanceY < camera.renderDistance) {
-                        // check if the point is hit wall
-                        if (hitWall(vector2D[i], py, map)) {
-                            // System.out.println(i + " hit " + py.x + " " + py.y + " " + tan);
-                            render(i, height, distanceBetweenPoints(pointsAfter[i], camera.position), distanceY, frame, new Point(distanceY*cos, distanceY*sin), new Point(0, -1 * directionY));
-                            break checkHit;
-                        }
-                        // next point
-                        distanceY += dy;
-                        py.x += directionY / tan;
-                        py.y += directionY;
-                        // System.out.println(i + distanceX + " " + distanceY);
-                    }
+    private void checkHit (Point distance, Point px, Point py, Camera camera, Point pointsAfter, double sin, double cos, double tan, Point vector, char[][] map, int i,double dx, double dy, int directionX, int directionY) {
+        while (distance.x < camera.renderDistance || distance.y < camera.renderDistance) {
+            // System.out.println(distanceX + " " + distanceY);
+            while (distance.x <= distance.y && distance.x < camera.renderDistance) {
+                // System.out.println("checking hit");
+                // check if the point is hit wall
+                if (hitWall(vector, px, map)) {
+                    // System.out.println(i + " hit " + px.x + " " + px.y + " " + tan);
+                    render(i, height, distanceBetweenPoints(pointsAfter, camera.position), distance.x, frame, new Point(distance.x*cos, distance.x*sin), new Point(-1 * directionX, 0));
+                    return;
                 }
-                // System.out.println(i + " not hit");
-                erase(i, frame);
+                // next point
+                distance.x += dx;
+                px.x += directionX;
+                px.y += directionX * tan;
+                // System.out.println(i + distanceX + " " + distanceY);
+            }
+
+            while (distance.y <= distance.x && distance.y < camera.renderDistance) {
+                // check if the point is hit wall
+                if (hitWall(vector, py, map)) {
+                    // System.out.println(i + " hit " + py.x + " " + py.y + " " + tan);
+                    render(i, height, distanceBetweenPoints(pointsAfter, camera.position), distance.y, frame, new Point(distance.y*cos, distance.y*sin), new Point(0, -1 * directionY));
+                    return;
+                }
+                // next point
+                distance.y += dy;
+                py.x += directionY / tan;
+                py.y += directionY;
+                // System.out.println(i + distanceX + " " + distanceY);
             }
         }
+        // System.out.println(i + " not hit");
+        erase(i, frame);
     }
 
     private Point rotatePoint (Point point, int angle) {
