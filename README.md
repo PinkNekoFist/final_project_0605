@@ -14,6 +14,6 @@ cd final_project_0605/src/main/java
 javac -cp .:jline-3.26.2-SNAPSHOT.jar org/example/GameController.java
 java -cp .:jline-3.26.2-SNAPSHOT.jar org/example/GameController 
 ```
-use w, s to move forward and backward
-use a, d to turn left and right
-use j, k to move up and down
+- use w, s to move forward and backward
+- use a, d to turn left and right
+- use j, k to move up and down
