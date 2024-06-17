@@ -16,7 +16,6 @@ public class GameController {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         World world = new World(50, 50);
-        // Input input = new Input();
         Output out = new Output();
         // init terminal
         Terminal terminal = TerminalBuilder.builder()
@@ -37,24 +36,9 @@ public class GameController {
         Screen screen = new Screen(terminalWidth * rationToWorld, terminalHeight * rationToWorld, new Point[terminalWidth], camera);
 
         start();
-        // while
         while (running) {
             refresh(terminalWidth, terminalHeight, camera, screen, world.getMap(), out);
             int ch = reader.read();
-                // System.out.println("Key pressed: " + (char) ch);
-                // TODO
-//                if (ch == 'q') {
-//                    stop();
-//                } else if (ch == 'w') {
-//                    camera.move(0.1);
-//                } else if (ch == 's') {
-//                    camera.move(-0.1);
-//                } else if (ch == 'd') {
-//                    camera.rotate(1);
-//                } else if (ch == 'a') {
-//                    camera.rotate(-1);
-//                }
-//
             switch (ch) {
                 case 'q':
                     stop();
