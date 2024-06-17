@@ -149,7 +149,7 @@ public class Graphic implements Get{
     private char texture (Point lightVector, Point normalVector, double distance) {
         lightVector.normalize();
         double dot = lightVector.x * normalVector.x + lightVector.y * normalVector.y;
-        int temp = (int)(dot * -12) - (int)(distance * 12 / 50);
+        int temp = (int)(dot * -12) - (int)(distance / 5);
         if (temp < 0) {
             temp = 0;
         } if (temp > 11) {
