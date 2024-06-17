@@ -41,7 +41,7 @@ public class Output implements Print {
     public void printAllScreen (char[][] frame) throws IOException {
         System.out.print("\033[H");
         for (int i = 0; i < frame.length; i++ ) {
-            for (int j = frame[0].length - 1; j >= 0; j-- ) {
+            for (int j = 0; j < frame[0].length; j++ ) {
                 System.out.print(frame[i][j]);
             }
             if (i != frame.length - 1 ) System.out.println();
