@@ -1,9 +1,7 @@
 # pd2 final project
----
 a simple program for 3D render
 
 # Running the demo
----
 ## Requirements
 - linux
 - [jline3](https://github.com/jline/jline3)
