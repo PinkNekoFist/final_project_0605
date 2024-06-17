@@ -1,7 +1,5 @@
 package org.example;
 
-import org.jline.utils.AnsiWriter;
-import java.io.OutputStreamWriter;
 import java.io.IOException;
 
 interface Print {
