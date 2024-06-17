@@ -9,7 +9,6 @@ public class Screen {
         this.screenHeight = screenHeight;
         for (int i = 0;i < points.length;i++) {
             points[i] = new Point(camera.distanceFromScreen, (screenWidth / points.length) * (double)(i + 1) - (screenWidth / 2));
-            // System.out.println(points[i].x + " " + points[i].y);
         }
         this.points = points;
     }
