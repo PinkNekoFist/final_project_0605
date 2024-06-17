@@ -3,9 +3,9 @@ package org.example;
 import java.io.IOException;
 
 interface Print {
-    public void output(Graphic graphic) throws IOException;
-    public void ansiPrint(int y, int x, char c) throws IOException;
-    public void printAllScreen(char[][] frame) throws IOException;
+    void output(Graphic graphic) throws IOException;
+    void ansiPrint(int y, int x, char c);
+    void printAllScreen(char[][] frame);
 }
 
 public class Output implements Print {
@@ -31,14 +31,14 @@ public class Output implements Print {
         frameLast = frame;
     }
 
-    public void ansiPrint(int y,int x, char c) throws IOException {
+    public void ansiPrint(int y,int x, char c) {
         // Move the cursor to row y, column x
         String temp = String.format("\033[%d;%dH", y+1, x+1);
         System.out.print(temp);
         System.out.print(c);
     }
 
-    public void printAllScreen (char[][] frame) throws IOException {
+    public void printAllScreen (char[][] frame) {
         System.out.print("\033[H");
         for (int i = 0; i < frame.length; i++ ) {
             for (int j = 0; j < frame[0].length; j++ ) {

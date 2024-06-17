@@ -1,7 +1,7 @@
 package org.example;
 
 interface Get {
-    public char[][] getFrame();
+    char[][] getFrame();
 }
 
 public class Graphic implements Get{

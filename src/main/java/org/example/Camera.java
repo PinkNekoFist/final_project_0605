@@ -1,11 +1,11 @@
 package org.example;
 
 interface Movement {
-    public void move (double distance);
+    void move (double distance);
 }
 
 interface Rotation {
-    public void rotate (double angle);
+    void rotate (double angle);
 }
 
 public class Camera implements Movement, Rotation{
