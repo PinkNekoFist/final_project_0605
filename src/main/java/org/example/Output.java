@@ -11,10 +11,6 @@ interface Print {
 public class Output implements Print {
     private char[][] frameLast;
 
-    public Output () {
-
-    }
-
     public void output(Graphic graphic) throws IOException {
         char[][] frame = graphic.getFrame();
         if (frameLast == null) {

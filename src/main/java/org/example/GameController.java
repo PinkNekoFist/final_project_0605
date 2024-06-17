@@ -8,11 +8,11 @@ import java.io.IOException;
 
 public class GameController {
 
-    static boolean running = false;
-    static final double moveDistance = 0.3;
-    static final double rotateAngle = 1;
-    static final double rationToWorld = 0.005;
-    static int moveRowConst = 0;
+    private static boolean running = false;
+    private static final double moveDistance = 0.3;
+    private static final double rotateAngle = 1;
+    private static final double rationToWorld = 0.005;
+    private static int moveRowConst = 0;
 
     public static void main(String[] args) throws IOException, InterruptedException {
         World world = new World(50, 50);
