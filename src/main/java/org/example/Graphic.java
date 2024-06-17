@@ -40,7 +40,7 @@ public class Graphic implements Get{
         }
 
 
-        // third step : according to vector find a wall on map (start from screen, end at wall or board) and render it
+        // second step : according to vector find a wall on map (start from screen, end at wall or board) and render it
         for (int i = 0;i < width;i++) {
             checkHit(camera, pointsAfter[i], vector2D[i], map, i);
         }
@@ -66,10 +66,7 @@ public class Graphic implements Get{
 
         while (distance.x < camera.renderDistance || distance.y < camera.renderDistance) {
             while (distance.x <= distance.y && distance.x < camera.renderDistance) {
-                // System.out.println("checking hit");
-                // check if the point is hit wall
                 if (hitWall(vector, px, map)) {
-                    // System.out.println(i + " hit " + px.x + " " + px.y + " " + tan);
                     render(i, height, distanceBetweenPoints(pointsAfter, camera.position), distance.x, frame, new Point(distance.x*cos, distance.x*sin), new Point(-1 * directionX, 0), moveRowConst);
                     return;
                 }
@@ -77,13 +74,10 @@ public class Graphic implements Get{
                 distance.x += dx;
                 px.x += directionX;
                 px.y += directionX * tan;
-                // System.out.println(i + distanceX + " " + distanceY);
             }
 
             while (distance.y <= distance.x && distance.y < camera.renderDistance) {
-                // check if the point is hit wall
                 if (hitWall(vector, py, map)) {
-                    // System.out.println(i + " hit " + py.x + " " + py.y + " " + tan);
                     render(i, height, distanceBetweenPoints(pointsAfter, camera.position), distance.y, frame, new Point(distance.y*cos, distance.y*sin), new Point(0, -1 * directionY), moveRowConst);
                     return;
                 }
@@ -91,15 +85,12 @@ public class Graphic implements Get{
                 distance.y += dy;
                 py.x += directionY / tan;
                 py.y += directionY;
-                // System.out.println(i + distanceX + " " + distanceY);
             }
         }
-        // System.out.println(i + " not hit");
         erase(i, frame);
     }
 
     private Point rotatePoint (Point point, double angle) {
-        // System.out.println(point.x + " " + point.y + " " + angle);
         Point newPoint = new Point(point.x, point.y);
         double cos = Math.cos(Math.toRadians(angle));
         double sin = Math.sin(Math.toRadians(angle));
@@ -136,13 +127,11 @@ public class Graphic implements Get{
     }
 
     private void render (int column, int numOfRow, double d1, double d2, char[][] frame,Point lightVector, Point normalVector, int moveRowConst) {
-        // System.out.println(d1 + " " + d2);
         double wallHeight = numOfRow * 12;
         double ratio = 0.8;
         int moveRow = (int)(wallHeight * ratio) - moveRowConst;
         int startHeight = (int)(wallHeight * ratio * (1 - d1 / (d1 + d2))) - moveRow;
         int endHeight = (int)(wallHeight * ratio * (1 + (1 - ratio) * d1 / (d1 +d2))) - moveRow;
-        // System.out.println(startHeight + " " + endHeight);
         for (int i = startHeight;i < endHeight; i++) {
             if (i < 0 || i >= height) continue;
             frame[i][column] = texture(lightVector, normalVector);
@@ -158,7 +147,6 @@ public class Graphic implements Get{
     private static final String lightTexture = ".'`^\\\",:;Il!i><~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao#MW&8%B@$";
     private char texture (Point lightVector, Point normalVector) {
         double dot = lightVector.x * normalVector.x + lightVector.y * normalVector.y;
-        // System.out.println(lightVector.x + " " + lightVector.y + " " + normalVector.x + " " + normalVector.y);
         int temp = (int)(dot * 50 / 30);
         if (temp < -67) temp = -67;
         else if (temp > 0) temp = 0;
