@@ -21,7 +21,7 @@ public class Camera implements Movement, Rotation{
         this.distanceFromScreen = (((double)terminalWidth * 0.005 / 2) / Math.tan(Math.toRadians(fov / 2))); // about 0.7426
         this.angle = angle;
         this.renderDistance = renderDistance;
-        System.out.println("x: " + x + " y: " + y + " angle: " + angle + " fov: " + fov + " distanceFromScreen: " + distanceFromScreen);
+        // System.out.println("x: " + x + " y: " + y + " angle: " + angle + " fov: " + fov + " distanceFromScreen: " + distanceFromScreen);
     }
 
     public void move(double distance) {

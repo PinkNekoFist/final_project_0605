@@ -30,9 +30,9 @@ public class GameController {
         }
         NonBlockingReader reader = terminal.reader();
 
-        System.out.println("height" + terminalHeight + " width" + terminalWidth);
+        // System.out.println("height" + terminalHeight + " width" + terminalWidth);
         // 50 208 in Hyprland full screen
-        Camera camera = new Camera(15, 15, -90, 70, terminalWidth, 50);
+        Camera camera = new Camera(40, 40, 60, 70, terminalWidth, 50);
         Screen screen = new Screen(terminalWidth * rationToWorld, terminalHeight * rationToWorld, new Point[terminalWidth], camera);
 
         start();
