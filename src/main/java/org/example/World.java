@@ -17,7 +17,11 @@ public class World {
                 }
             }
         }
-        changeMap(20, 35, 20 ,35);
+        changeMap(20, 30, 20 ,30);
+        changeMap(0, 9, 0 ,9);
+        changeMap(40, 49, 40 ,49);
+        changeMap(0, 9, 40 ,49);
+        changeMap(40, 49, 0 ,9);
     }
 
     public void changeMap(int x1, int x2, int y1, int y2) {
