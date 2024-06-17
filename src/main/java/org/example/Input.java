@@ -1,3 +1,4 @@
+// have no use now
 package org.example;
 
 import org.jline.terminal.*;
@@ -9,6 +10,7 @@ public class Input {
             Terminal terminal = TerminalBuilder.builder()
                     .jna(true)
                     .build();
+            terminal.enterRawMode();
             NonBlockingReader reader = terminal.reader();
             System.out.println("Press any key:");
 
