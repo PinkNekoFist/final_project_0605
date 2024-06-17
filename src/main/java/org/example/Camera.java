@@ -5,17 +5,17 @@ interface Movement {
 }
 
 interface Rotation {
-    public void rotate (int angle);
+    public void rotate (double angle);
 }
 
 public class Camera implements Movement, Rotation{
     Point position;
     double fov;
-    int angle;
+    double angle;
     double distanceFromScreen;
     double renderDistance;
 
-    public Camera(double x, double y, int angle, double fov, int terminalWidth, double renderDistance) {
+    public Camera(double x, double y, double angle, double fov, int terminalWidth, double renderDistance) {
         position = new Point(x, y);
         this.fov = fov; // 70
         this.distanceFromScreen = (((double)terminalWidth * 0.005 / 2) / Math.tan(Math.toRadians(fov / 2))); // about 0.7426
@@ -29,9 +29,9 @@ public class Camera implements Movement, Rotation{
         position.y += distance * Math.sin(Math.toRadians(angle));
     }
 
-    public void rotate(int angle) {
+    public void rotate(double angle) {
         this.angle += angle;
-        if (this.angle == 0) this.angle = 1;
+        if (this.angle == 0) this.angle += angle;
     }
 }
 
