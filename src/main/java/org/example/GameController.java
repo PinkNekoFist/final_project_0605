@@ -2,56 +2,107 @@ package org.example;
 
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
+import org.jline.utils.NonBlockingReader;
 
 import java.io.IOException;
 
 public class GameController {
 
     static boolean running = false;
-    static final double moveDistance = 1;
-    static final double rotateAngle = 0.1;
+    static final double moveDistance = 0.3;
+    static final double rotateAngle = 1;
     static final double rationToWorld = 0.005;
+    static int moveRowConst = 0;
 
-    public static void main(String[] args) throws IOException {
-        World world = new World(30, 30);
-        Input input = new Input();
+    public static void main(String[] args) throws IOException, InterruptedException {
+        World world = new World(50, 50);
+        // Input input = new Input();
         Output out = new Output();
+        // init terminal
         Terminal terminal = TerminalBuilder.builder()
-                .system(true)
+                .jna(true)
                 .build();
         int terminalWidth = terminal.getWidth();
         int terminalHeight = terminal.getHeight();
-        System.out.println("height" + terminal.getHeight() + "width" + terminal.getWidth());
+        try {
+            terminal.enterRawMode();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        NonBlockingReader reader = terminal.reader();
+
+        System.out.println("height" + terminalHeight + " width" + terminalWidth);
         // 50 208 in Hyprland full screen
-        Camera camera = new Camera(0, 0, 90, 70, terminal.getWidth());
+        Camera camera = new Camera(15, 15, -90, 70, terminalWidth, 50);
         Screen screen = new Screen(terminalWidth * rationToWorld, terminalHeight * rationToWorld, new Point[terminalWidth], camera);
 
         start();
-        // Graphic frameTest = new Graphic(terminal.getWidth(), terminal.getHeight(), camera, screen);
         // while
-        while (!running) {
-//            if () {
-//                camera.move(moveDistance);
-//            }
+        while (running) {
+            refresh(terminalWidth, terminalHeight, camera, screen, world.getMap(), out);
+            int ch = reader.read();
+                // System.out.println("Key pressed: " + (char) ch);
+                // TODO
+//                if (ch == 'q') {
+//                    stop();
+//                } else if (ch == 'w') {
+//                    camera.move(0.1);
+//                } else if (ch == 's') {
+//                    camera.move(-0.1);
+//                } else if (ch == 'd') {
+//                    camera.rotate(1);
+//                } else if (ch == 'a') {
+//                    camera.rotate(-1);
+//                }
 //
-//            if () {
-//                camera.rotate(rotateAngle);
-//            }
-
-            Graphic frame = new Graphic(terminal.getWidth(), terminal.getHeight(), camera, screen);
-            out.output(frame);
+            switch (ch) {
+                case 'q':
+                    stop();
+                    break;
+                case 'w':
+                    camera.move(moveDistance);
+                    break;
+                case 's':
+                    camera.move(-moveDistance);
+                    break;
+                case 'd':
+                    camera.rotate(rotateAngle);
+                    break;
+                case 'a':
+                    camera.rotate(-rotateAngle);
+                    break;
+                case  'j':
+                    moveRowConst -= 1;
+                    break;
+                case 'k':
+                    moveRowConst += 1;
+                    break;
+                default:
+                    break;
+            }
+            Thread.sleep(10);
         }
     }
 
-    public static void start() {
+    private static void start() {
         running = true;
     }
 
-    public static void stop() {
+    private static void stop() {
         running = false;
+        // TODO
     }
 
-    public boolean isRunning() {
+    private static boolean isRunning() {
         return running;
+    }
+
+    private static void refresh(int width, int height, Camera camera, Screen screen, char[][] map, Output out) {
+        Graphic graphic = new Graphic(width, height, camera, screen, map, moveRowConst);
+        try {
+            out.output(graphic);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
