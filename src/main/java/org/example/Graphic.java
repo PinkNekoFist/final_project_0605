@@ -9,10 +9,10 @@ public class Graphic implements Get{
     private int width, height;
     private int moveRowConst;
 
-    public Graphic(int width, int height, Camera camera, Screen screen, char[][] map) {
+    public Graphic(int width, int height, Camera camera, Screen screen, char[][] map, int moveRowConst) {
         this.width = width;
         this.height = height;
-        this.moveRowConst = 33;
+        this.moveRowConst = 33 + moveRowConst;
 
         frame = new char[height][width];
         // test
@@ -155,11 +155,14 @@ public class Graphic implements Get{
         }
     }
 
-    private static final String lightTexture = ".'`^\\\",:;Il!i><~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$";
+    private static final String lightTexture = ".'`^\\\",:;Il!i><~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao#MW&8%B@$";
     private char texture (Point lightVector, Point normalVector) {
         double dot = lightVector.x * normalVector.x + lightVector.y * normalVector.y;
         // System.out.println(lightVector.x + " " + lightVector.y + " " + normalVector.x + " " + normalVector.y);
-        return lightTexture.charAt(68 + (int)(dot * 50 / 30));
+        int temp = (int)(dot * 50 / 30);
+        if (temp < -67) temp = -67;
+        else if (temp > 0) temp = 0;
+        return lightTexture.charAt(67 + temp);
     }
 
     public char[][] getFrame() {
