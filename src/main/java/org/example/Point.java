@@ -13,4 +13,10 @@ public class Point {
         this.x = p.x;
         this.y = p.y;
     }
+
+    public void normalize() {
+        double len = Math.sqrt(x * x + y * y);
+        x = x / len;
+        y = y / len;
+    }
 }
