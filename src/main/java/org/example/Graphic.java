@@ -134,7 +134,7 @@ public class Graphic implements Get{
         int endHeight = (int)(wallHeight * ratio * (1 + (1 - ratio) * d1 / (d1 +d2))) - moveRow;
         for (int i = startHeight;i < endHeight; i++) {
             if (i < 0 || i >= height) continue;
-            frame[i][column] = texture(lightVector, normalVector);
+            frame[i][column] = texture(lightVector, normalVector, d2);
         }
     }
 
@@ -144,13 +144,18 @@ public class Graphic implements Get{
         }
     }
 
-    private static final String lightTexture = ".'`^\\\",:;Il!i><~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao#MW&8%B@$";
-    private char texture (Point lightVector, Point normalVector) {
+    // private static final String lightTexture = ".'`^\\\",:;Il!i><~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao#MW&8%B@$";
+    private  static final String lightTexture = ".,-~:;=!*#$@";
+    private char texture (Point lightVector, Point normalVector, double distance) {
+        lightVector.normalize();
         double dot = lightVector.x * normalVector.x + lightVector.y * normalVector.y;
-        int temp = (int)(dot * 50 / 30);
-        if (temp < -67) temp = -67;
-        else if (temp > 0) temp = 0;
-        return lightTexture.charAt(67 + temp);
+        int temp = (int)(dot * -12) - (int)(distance * 12 / 50);
+        if (temp < 0) {
+            temp = 0;
+        } if (temp > 11) {
+            temp = 11;
+        }
+        return lightTexture.charAt(temp);
     }
 
     public char[][] getFrame() {
