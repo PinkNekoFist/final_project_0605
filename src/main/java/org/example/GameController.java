@@ -32,7 +32,7 @@ public class GameController {
 
         // System.out.println("height" + terminalHeight + " width" + terminalWidth);
         // 50 208 in Hyprland full screen
-        Camera camera = new Camera(35, 35, -90, 70, terminalWidth, 50);
+        Camera camera = new Camera(35, 35, -91, 70, terminalWidth, 50);
         Screen screen = new Screen(terminalWidth * rationToWorld, terminalHeight * rationToWorld, new Point[terminalWidth], camera);
 
         start();
@@ -41,7 +41,7 @@ public class GameController {
             int ch = reader.read();
             switch (ch) {
                 case 'q':
-                    stop();
+                    stop(out);
                     break;
                 case 'w':
                     camera.move(moveDistance);
@@ -72,9 +72,9 @@ public class GameController {
         running = true;
     }
 
-    private static void stop() {
+    private static void stop(Output out) {
         running = false;
-        // TODO
+        out.gameOver();
     }
 
     private static boolean isRunning() {
