@@ -165,8 +165,4 @@ public class Graphic implements Get{
     public char[][] getFrame() {
         return frame;
     }
-
-    public void moveGraphic(int i) {
-        moveRowConst += i;
-    }
 }
