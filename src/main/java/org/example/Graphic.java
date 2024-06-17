@@ -1,17 +1,18 @@
 package org.example;
 
-import java.util.Vector;
+interface Get {
+    public char[][] getFrame();
+}
 
-public class Graphic {
-    public char[][] frame;
-    public int width, height;
-    private Point[] pointsOnScreen;
+public class Graphic implements Get{
+    private char[][] frame;
+    private int width, height;
+    private int moveRowConst;
 
     public Graphic(int width, int height, Camera camera, Screen screen, char[][] map) {
         this.width = width;
         this.height = height;
-
-        // init points not good always make new object
+        this.moveRowConst = 33;
 
         frame = new char[height][width];
         // test
@@ -22,10 +23,10 @@ public class Graphic {
         }
 
         // rayCasting
-        rayCasting(width, height, frame, camera, screen, map);
+        rayCasting(frame, camera, screen, map);
     }
 
-    private void rayCasting (int width, int height, char[][] frame, Camera camera, Screen screen, char[][] map) {
+    private void rayCasting (char[][] frame, Camera camera, Screen screen, char[][] map) {
         // terminal per line has width (208 while full screen in my pc) char
         // one char is n = 0.005 in map
         // first step : get every column's position in screen on map, by rotate a line and move it
@@ -36,53 +37,40 @@ public class Graphic {
             vector2D[i] = new Point(pointsAfter[i]);
             pointsAfter[i].x += camera.position.x;
             pointsAfter[i].y += camera.position.y;
-            // System.out.println(pointsAfter[i].x + " " + pointsAfter[i].y);
         }
 
-        // second step : find a vector from camera to points // vector2D[]
 
-        // third step : according to vector find a wall on map (start from screen, end at wall or board)
-        for (int i = 0;i < pointsAfter.length;i++) {
-            double angle = Math.atan2(vector2D[i].y, vector2D[i].x);
-            double cos = Math.cos(angle);
-            double sin = Math.sin(angle);
-            double tan = sin/cos;
-            double distanceY = 0; // y is Z
-            double distanceX = 0; // x is Z
-            double dy = Math.abs(1/sin);
-            double dx = Math.abs(1/cos);
-
-            // find first two points
-            Point px = findFirstPointX(pointsAfter[i], vector2D[i], tan);
-            Point py = findFirstPointY(pointsAfter[i], vector2D[i], tan);
-//            System.out.println("first point x : " + px.x + " y : " + px.y);
-//            System.out.println("second point x : " + py.x + " y : " + py.y);
-            // System.out.println(dx + " " + dy);
-
-            distanceX += distanceBetweenPoints(pointsAfter[i], px);
-            distanceY += distanceBetweenPoints(pointsAfter[i], py);
-
-            if (Double.isNaN(distanceY)) {
-                distanceY = 0;
-            }
-
-            int directionX = (vector2D[i].x > 0) ? 1 : -1;
-            int directionY = (vector2D[i].y > 0) ? 1 : -1;
-            Point distance = new Point(distanceX, distanceY);
-
-            checkHit(distance, px, py, camera, pointsAfter[i], sin, cos, tan, vector2D[i], map, i, dx, dy, directionX, directionY);
+        // third step : according to vector find a wall on map (start from screen, end at wall or board) and render it
+        for (int i = 0;i < width;i++) {
+            checkHit(camera, pointsAfter[i], vector2D[i], map, i);
         }
     }
 
-    private void checkHit (Point distance, Point px, Point py, Camera camera, Point pointsAfter, double sin, double cos, double tan, Point vector, char[][] map, int i,double dx, double dy, int directionX, int directionY) {
+    private void checkHit (Camera camera, Point pointsAfter, Point vector, char[][] map, int i) {
+        double angle = Math.atan2(vector.y, vector.x);
+        int directionX = (vector.x > 0) ? 1 : -1;
+        int directionY = (vector.y > 0) ? 1 : -1;
+        double cos = Math.cos(angle);
+        double sin = Math.sin(angle);
+        double tan = sin/cos;
+        
+        double dy = Math.abs(1/sin);
+        double dx = Math.abs(1/cos);
+        
+        // find first two points
+        Point px = findFirstPointX(pointsAfter, vector, tan);
+        Point py = findFirstPointY(pointsAfter, vector, tan);
+        
+        
+        Point distance = new Point(distanceBetweenPoints(pointsAfter, px), distanceBetweenPoints(pointsAfter, py));
+
         while (distance.x < camera.renderDistance || distance.y < camera.renderDistance) {
-            // System.out.println(distanceX + " " + distanceY);
             while (distance.x <= distance.y && distance.x < camera.renderDistance) {
                 // System.out.println("checking hit");
                 // check if the point is hit wall
                 if (hitWall(vector, px, map)) {
                     // System.out.println(i + " hit " + px.x + " " + px.y + " " + tan);
-                    render(i, height, distanceBetweenPoints(pointsAfter, camera.position), distance.x, frame, new Point(distance.x*cos, distance.x*sin), new Point(-1 * directionX, 0));
+                    render(i, height, distanceBetweenPoints(pointsAfter, camera.position), distance.x, frame, new Point(distance.x*cos, distance.x*sin), new Point(-1 * directionX, 0), moveRowConst);
                     return;
                 }
                 // next point
@@ -96,7 +84,7 @@ public class Graphic {
                 // check if the point is hit wall
                 if (hitWall(vector, py, map)) {
                     // System.out.println(i + " hit " + py.x + " " + py.y + " " + tan);
-                    render(i, height, distanceBetweenPoints(pointsAfter, camera.position), distance.y, frame, new Point(distance.y*cos, distance.y*sin), new Point(0, -1 * directionY));
+                    render(i, height, distanceBetweenPoints(pointsAfter, camera.position), distance.y, frame, new Point(distance.y*cos, distance.y*sin), new Point(0, -1 * directionY), moveRowConst);
                     return;
                 }
                 // next point
@@ -110,7 +98,7 @@ public class Graphic {
         erase(i, frame);
     }
 
-    private Point rotatePoint (Point point, int angle) {
+    private Point rotatePoint (Point point, double angle) {
         // System.out.println(point.x + " " + point.y + " " + angle);
         Point newPoint = new Point(point.x, point.y);
         double cos = Math.cos(Math.toRadians(angle));
@@ -131,7 +119,11 @@ public class Graphic {
     }
 
     private double distanceBetweenPoints (Point p1, Point p2) {
-        return Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+        double distance = Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+            if (Double.isNaN(distance)) {
+                return 0;
+            }
+        return distance;
     }
 
     private boolean hitWall (Point vector, Point p, char[][] map) {
@@ -143,22 +135,22 @@ public class Graphic {
         return map[map.length - y][x] == '#';
     }
 
-    private void render (int column, int numOfRow, double d1, double d2, char[][] frame,Point lightVector, Point normalVector) {
+    private void render (int column, int numOfRow, double d1, double d2, char[][] frame,Point lightVector, Point normalVector, int moveRowConst) {
         // System.out.println(d1 + " " + d2);
         double wallHeight = numOfRow * 12;
         double ratio = 0.8;
-        int moveRow = (int)(wallHeight * ratio) - 40;
+        int moveRow = (int)(wallHeight * ratio) - moveRowConst;
         int startHeight = (int)(wallHeight * ratio * (1 - d1 / (d1 + d2))) - moveRow;
         int endHeight = (int)(wallHeight * ratio * (1 + (1 - ratio) * d1 / (d1 +d2))) - moveRow;
-        System.out.println(startHeight + " " + endHeight);
+        // System.out.println(startHeight + " " + endHeight);
         for (int i = startHeight;i < endHeight; i++) {
-            if (i < 0 || i >= frame.length) continue;
+            if (i < 0 || i >= height) continue;
             frame[i][column] = texture(lightVector, normalVector);
         }
     }
 
     private void erase (int column, char[][] frame) {
-        for (int i = 0; i < frame.length; i++) {
+        for (int i = 0; i < height; i++) {
             frame[i][column] = ' ';
         }
     }
@@ -168,5 +160,13 @@ public class Graphic {
         double dot = lightVector.x * normalVector.x + lightVector.y * normalVector.y;
         // System.out.println(lightVector.x + " " + lightVector.y + " " + normalVector.x + " " + normalVector.y);
         return lightTexture.charAt(68 + (int)(dot * 50 / 30));
+    }
+
+    public char[][] getFrame() {
+        return frame;
+    }
+
+    public void moveGraphic(int i) {
+        moveRowConst += i;
     }
 }
