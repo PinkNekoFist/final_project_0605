@@ -15,6 +15,11 @@ public class World {
                 }
             }
         }
+        for (int y = 20; y < 30; y++) {
+            for (int x = 20; x < 30; x++) {
+                map[y][x] = '#';
+            }
+        }
     }
 
     public void changeMap(int x, int y) {
